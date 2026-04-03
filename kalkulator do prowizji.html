@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Wypłat - EE i GAZ</title>
+    <style>
+        /* Zgodnie z poleceniem: czyste białe tło */
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-top: 0;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #aaa;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        .results {
+            margin-top: 20px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kalkulator Wypłat</h2>
+    
+    <div class="form-group">
+        <label for="role">1. Stanowisko</label>
+        <select id="role">
+            <option value="doradca">Doradca</option>
+            <option value="trener">Trener</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="product">2. Produkt</label>
+        <select id="product" onchange="updateSellers()">
+            <option value="ee">Energia Elektryczna (EE)</option>
+            <option value="gaz">GAZ</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="seller">3. Sprzedawca</label>
+        <select id="seller" onchange="updateFormFields()">
+            <option value="eon">E.ON</option>
+            <option value="ekovoltis">Ekovoltis</option>
+        </select>
+    </div>
+
+    <div class="form-group hidden" id="ekovoltis-margin-group">
+        <label for="marginLevel">3a. Masa marży miesięczna (tylko Ekovoltis)</label>
+        <select id="marginLevel">
+            <option value="do100k">Do 100 000 PLN</option>
+            <option value="pow100k">Powyżej 100 000 PLN</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="volume">4. Zużycie roczne (MWh)</label>
+        <input type="number" id="volume" min="1" value="30">
+    </div>
+
+    <div class="form-group">
+        <label for="markup">5. Narzut do cennika (PLN/MWh)</label>
+        <input type="number" id="markup" min="1" value="100">
+    </div>
+
+    <div class="form-group">
+        <label for="startYear">6. Rok rozpoczęcia kontraktu</label>
+        <select id="startYear" onchange="updateEndYears()">
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+            <option value="2031" id="start2031" class="hidden">2031</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="endYear">7. Rok zakończenia kontraktu</label>
+        <select id="endYear">
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+            <option value="2028">2028</option>
+            <option value="2029">2029</option>
+            <option value="2030">2030</option>
+            <option value="2031" id="end2031" class="hidden">2031</option>
+        </select>
+    </div>
+
+    <button onclick="calculate()">Oblicz Wypłatę</button>
+
+    <div class="results" id="results" class="hidden">
+        </div>
+</div>
+
+<script>
+    // Konfiguracja prowizji dla par [rola][produkt]
+    const commissions = {
+        doradca: { ee: 0.28, gaz: 0.23 },
+        trener: { ee: 0.34, gaz: 0.28 }
+    };
+
+    // Konfiguracja transz (procenty w poszczególnych latach)
+    const tranches = {
+        eon: { 2026: 1.0, 2027: 0.90, 2028: 0.70, 2029: 0.50, 2030: 0.50 },
+        ekovoltis_do100k: { 2026: 0.60, 2027: 0.60, 2028: 0.60, 2029: 0.30, 2030: 0.10, 2031: 0.10 },
+        ekovoltis_pow100k: { 2026: 0.70, 2027: 0.70, 2028: 0.70, 2029: 0.55, 2030: 0.30, 2031: 0.20 }
+    };
+
+    function updateSellers() {
+        const product = document.getElementById('product').value;
+        const sellerSelect = document.getElementById('seller');
+        
+        if (product === 'gaz') {
+            sellerSelect.value = 'ekovoltis';
+            sellerSelect.disabled = true; // Gaz tylko w Ekovoltis
+        } else {
+            sellerSelect.disabled = false;
+        }
+        updateFormFields();
+    }
+
+    function updateFormFields() {
+        const seller = document.getElementById('seller').value;
+        const marginGroup = document.getElementById('ekovoltis-margin-group');
+        const start2031 = document.getElementById('start2031');
+        const end2031 = document.getElementById('end2031');
+
+        if (seller === 'ekovoltis') {
+            marginGroup.classList.remove('hidden');
+            start2031.classList.remove('hidden');
+            end2031.classList.remove('hidden');
+        } else {
+            marginGroup.classList.add('hidden');
+            start2031.classList.add('hidden');
+            end2031.classList.add('hidden');
+            
+            // Cofnij wybór 2031 jeśli zmieniono na E.ON
+            if(document.getElementById('startYear').value === '2031') document.getElementById('startYear').value = '2030';
+            if(document.getElementById('endYear').value === '2031') document.getElementById('endYear').value = '2030';
+        }
+        updateEndYears();
+    }
+
+    function updateEndYears() {
+        const startYear = parseInt(document.getElementById('startYear').value);
+        const endSelect = document.getElementById('endYear');
+        
+        for (let i = 0; i < endSelect.options.length; i++) {
+            let optionYear = parseInt(endSelect.options[i].value);
+            if (optionYear < startYear) {
+                endSelect.options[i].disabled = true;
+            } else {
+                endSelect.options[i].disabled = false;
+            }
+        }
+        
+        if (parseInt(endSelect.value) < startYear) {
+            endSelect.value = startYear;
+        }
+    }
+
+    function calculate() {
+        const role = document.getElementById('role').value;
+        const product = document.getElementById('product').value;
+        const seller = document.getElementById('seller').value;
+        const marginLevel = document.getElementById('marginLevel').value;
+        const volume = parseFloat(document.getElementById('volume').value);
+        const markup = parseFloat(document.getElementById('markup').value);
+        const startYear = parseInt(document.getElementById('startYear').value);
+        const endYear = parseInt(document.getElementById('endYear').value);
+
+        // Zabezpieczenia danych
+        if(isNaN(volume) || isNaN(markup)) return alert('Wprowadź poprawne wartości liczbowe dla zużycia i narzutu.');
+
+        const commissionRate = commissions[role][product];
+        const podatekPIT = 0.19; // 19%
+        const mnoznikNetto = 1 - podatekPIT; // 81%
+        
+        let totalSumaNetto = 0;
+        let html = `<h3>Szczegóły wypłaty (Prowizja bazowa: ${commissionRate * 100}%)</h3>`;
+        html += `<table><tr><th>Rok</th><th>Baza MM/Rok</th><th>Transza (%)</th><th>Do wypłaty (Netto)</th></tr>`;
+
+        for (let y = startYear; y <= endYear; y++) {
+            let tranchePct = 0;
+            
+            // Wybór odpowiedniej tabeli transz
+            if (seller === 'eon') {
+                tranchePct = tranches.eon[y] || 0;
+            } else {
+                if (marginLevel === 'do100k') {
+                    tranchePct = tranches.ekovoltis_do100k[y] || 0;
+                } else {
+                    tranchePct = tranches.ekovoltis_pow100k[y] || 0;
+                }
+            }
+
+            // Obliczenia krok po kroku
+            let rocznaMasaMarzy = volume * markup;
+            let naleznaProwizjaBrutto = rocznaMasaMarzy * tranchePct * commissionRate;
+            let wyplataNetto = naleznaProwizjaBrutto * mnoznikNetto;
+
+            totalSumaNetto += wyplataNetto;
+
+            html += `<tr>
+                        <td>${y}</td>
+                        <td>${rocznaMasaMarzy.toFixed(2)} zł</td>
+                        <td>${(tranchePct * 100).toFixed(0)}%</td>
+                        <td><strong>${wyplataNetto.toFixed(2)} zł</strong></td>
+                     </tr>`;
+        }
+
+        html += `<tr><th colspan="3" style="text-align:right">CAŁKOWITA SUMA NETTO DO WYPŁATY:</th><th style="color:green; font-size:1.2em">${totalSumaNetto.toFixed(2)} zł</th></tr></table>`;
+        
+        document.getElementById('results').innerHTML = html;
+        document.getElementById('results').classList.remove('hidden');
+    }
+
+    // Inicjalizacja przy pierwszym załadowaniu
+    updateSellers();
+</script>
+
+</body>
+</html>
