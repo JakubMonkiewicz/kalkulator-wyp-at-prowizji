@@ -12,7 +12,18 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            position: relative; /* Potrzebne do pozycjonowania loga */
         }
+        
+        /* Styl dla loga Direct4Energy */
+        .company-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            max-width: 150px; /* Maksymalna szerokość loga */
+            height: auto; /* Zachowanie proporcji */
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -20,6 +31,7 @@
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 60px; /* Miejsce na logo na małych ekranach */
         }
         h2 {
             text-align: center;
@@ -75,9 +87,24 @@
         .hidden {
             display: none;
         }
+
+        /* Responsywność dla loga */
+        @media (max-width: 600px) {
+            .company-logo {
+                position: static;
+                display: block;
+                margin: 0 auto 20px auto;
+                max-width: 120px;
+            }
+            .container {
+                margin-top: 20px;
+            }
+        }
     </style>
 </head>
 <body>
+
+<img src="logo.png" alt="Logo Direct4Energy" class="company-logo">
 
 <div class="container">
     <h2>Kalkulator Wypłat</h2>
@@ -239,7 +266,8 @@
         const mnoznikNetto = 1 - podatekPIT; // 81%
         
         let totalSumaNetto = 0;
-        let html = `<h3>Szczegóły wypłaty (Prowizja bazowa: ${commissionRate * 100}%)</h3>`;
+        // Poprawka błędu zmiennoprzecinkowego z użyciem .toFixed(0)
+        let html = `<h3>Szczegóły wypłaty (Prowizja bazowa: ${(commissionRate * 100).toFixed(0)}%)</h3>`;
         html += `<table><tr><th>Rok</th><th>Baza MM/Rok</th><th>Transza (%)</th><th>Do wypłaty (Netto)</th></tr>`;
 
         for (let y = startYear; y <= endYear; y++) {
