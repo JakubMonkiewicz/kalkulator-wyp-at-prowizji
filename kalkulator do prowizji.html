@@ -91,6 +91,9 @@
         th {
             background-color: #f2f2f2;
         }
+        .summary-row {
+            background-color: #f9f9f9;
+        }
         .hidden {
             display: none;
         }
@@ -128,7 +131,17 @@
     </div>
 
     <div class="form-group">
-        <label for="product">2. Produkt</label>
+        <label for="split">2. Podział prowizji</label>
+        <select id="split">
+            <option value="1">Solo (100%)</option>
+            <option value="2">2 osoby (50/50)</option>
+            <option value="3">3 osoby (33/33/33)</option>
+            <option value="4">4 osoby (25/25/25/25)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="product">3. Produkt</label>
         <select id="product" onchange="updateSellers()">
             <option value="ee">Energia Elektryczna (EE)</option>
             <option value="gaz">GAZ</option>
@@ -136,7 +149,7 @@
     </div>
 
     <div class="form-group">
-        <label for="seller">3. Sprzedawca</label>
+        <label for="seller">4. Sprzedawca</label>
         <select id="seller" onchange="updateFormFields()">
             <option value="eon">E.ON</option>
             <option value="ekovoltis">Ekovoltis</option>
@@ -144,7 +157,7 @@
     </div>
 
     <div class="form-group hidden" id="ekovoltis-margin-group">
-        <label for="marginLevel">3a. Masa marży miesięczna (Ekovoltis)</label>
+        <label for="marginLevel">4a. Masa marży miesięczna (Ekovoltis)</label>
         <select id="marginLevel">
             <option value="do100k">Do 100 000 PLN</option>
             <option value="pow100k">Powyżej 100 000 PLN</option>
@@ -153,81 +166,62 @@
 
     <div class="flex-group">
         <div class="form-group">
-            <label for="volume">4. Zużycie roczne (MWh)</label>
+            <label for="volume">5. Zużycie roczne (MWh)</label>
             <input type="number" id="volume" min="1" value="30">
         </div>
         <div class="form-group">
-            <label for="markup">5. Narzut (PLN/MWh)</label>
+            <label for="markup">6. Narzut (PLN/MWh)</label>
             <input type="number" id="markup" min="1" value="100">
         </div>
     </div>
 
     <div class="flex-group">
         <div class="form-group">
-            <label for="startMonth">6. Start (Miesiąc)</label>
+            <label for="startMonth">7. Start (Miesiąc)</label>
             <select id="startMonth">
-                <option value="1">Styczeń</option>
-                <option value="2">Luty</option>
-                <option value="3">Marzec</option>
-                <option value="4" selected>Kwiecień</option>
-                <option value="5">Maj</option>
-                <option value="6">Czerwiec</option>
-                <option value="7">Lipiec</option>
-                <option value="8">Sierpień</option>
-                <option value="9">Wrzesień</option>
-                <option value="10">Październik</option>
-                <option value="11">Listopad</option>
-                <option value="12">Grudzień</option>
+                <option value="1">Styczeń</option><option value="2">Luty</option>
+                <option value="3">Marzec</option><option value="4" selected>Kwiecień</option>
+                <option value="5">Maj</option><option value="6">Czerwiec</option>
+                <option value="7">Lipiec</option><option value="8">Sierpień</option>
+                <option value="9">Wrzesień</option><option value="10">Październik</option>
+                <option value="11">Listopad</option><option value="12">Grudzień</option>
             </select>
         </div>
         <div class="form-group">
             <label for="startYear">Start (Rok)</label>
             <select id="startYear" onchange="updateEndYears()">
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-                <option value="2029">2029</option>
-                <option value="2030">2030</option>
-                <option value="2031" id="start2031" class="hidden">2031</option>
+                <option value="2026">2026</option><option value="2027">2027</option>
+                <option value="2028">2028</option><option value="2029">2029</option>
+                <option value="2030">2030</option><option value="2031" id="start2031" class="hidden">2031</option>
             </select>
         </div>
     </div>
 
     <div class="flex-group">
         <div class="form-group">
-            <label for="endMonth">7. Koniec (Miesiąc)</label>
+            <label for="endMonth">8. Koniec (Miesiąc)</label>
             <select id="endMonth">
-                <option value="1">Styczeń</option>
-                <option value="2">Luty</option>
-                <option value="3">Marzec</option>
-                <option value="4">Kwiecień</option>
-                <option value="5">Maj</option>
-                <option value="6">Czerwiec</option>
-                <option value="7">Lipiec</option>
-                <option value="8">Sierpień</option>
-                <option value="9">Wrzesień</option>
-                <option value="10">Październik</option>
-                <option value="11">Listopad</option>
-                <option value="12" selected>Grudzień</option>
+                <option value="1">Styczeń</option><option value="2">Luty</option>
+                <option value="3">Marzec</option><option value="4">Kwiecień</option>
+                <option value="5">Maj</option><option value="6">Czerwiec</option>
+                <option value="7">Lipiec</option><option value="8">Sierpień</option>
+                <option value="9">Wrzesień</option><option value="10">Październik</option>
+                <option value="11">Listopad</option><option value="12" selected>Grudzień</option>
             </select>
         </div>
         <div class="form-group">
             <label for="endYear">Koniec (Rok)</label>
             <select id="endYear">
-                <option value="2026">2026</option>
-                <option value="2027">2027</option>
-                <option value="2028">2028</option>
-                <option value="2029">2029</option>
-                <option value="2030">2030</option>
-                <option value="2031" id="end2031" class="hidden">2031</option>
+                <option value="2026">2026</option><option value="2027">2027</option>
+                <option value="2028">2028</option><option value="2029">2029</option>
+                <option value="2030">2030</option><option value="2031" id="end2031" class="hidden">2031</option>
             </select>
         </div>
     </div>
 
     <button onclick="calculate()">Oblicz Wypłatę</button>
 
-    <div class="results" id="results" class="hidden">
-        </div>
+    <div class="results" id="results" class="hidden"></div>
 </div>
 
 <script>
@@ -245,13 +239,8 @@
     function updateSellers() {
         const product = document.getElementById('product').value;
         const sellerSelect = document.getElementById('seller');
-        
-        if (product === 'gaz') {
-            sellerSelect.value = 'ekovoltis';
-            sellerSelect.disabled = true;
-        } else {
-            sellerSelect.disabled = false;
-        }
+        if (product === 'gaz') { sellerSelect.value = 'ekovoltis'; sellerSelect.disabled = true; } 
+        else { sellerSelect.disabled = false; }
         updateFormFields();
     }
 
@@ -260,16 +249,10 @@
         const marginGroup = document.getElementById('ekovoltis-margin-group');
         const start2031 = document.getElementById('start2031');
         const end2031 = document.getElementById('end2031');
-
         if (seller === 'ekovoltis') {
-            marginGroup.classList.remove('hidden');
-            start2031.classList.remove('hidden');
-            end2031.classList.remove('hidden');
+            marginGroup.classList.remove('hidden'); start2031.classList.remove('hidden'); end2031.classList.remove('hidden');
         } else {
-            marginGroup.classList.add('hidden');
-            start2031.classList.add('hidden');
-            end2031.classList.add('hidden');
-            
+            marginGroup.classList.add('hidden'); start2031.classList.add('hidden'); end2031.classList.add('hidden');
             if(document.getElementById('startYear').value === '2031') document.getElementById('startYear').value = '2030';
             if(document.getElementById('endYear').value === '2031') document.getElementById('endYear').value = '2030';
         }
@@ -279,83 +262,64 @@
     function updateEndYears() {
         const startYear = parseInt(document.getElementById('startYear').value);
         const endSelect = document.getElementById('endYear');
-        
         for (let i = 0; i < endSelect.options.length; i++) {
             let optionYear = parseInt(endSelect.options[i].value);
             endSelect.options[i].disabled = optionYear < startYear;
         }
-        
-        if (parseInt(endSelect.value) < startYear) {
-            endSelect.value = startYear;
-        }
+        if (parseInt(endSelect.value) < startYear) { endSelect.value = startYear; }
     }
 
     function calculate() {
         const role = document.getElementById('role').value;
+        const split = parseInt(document.getElementById('split').value);
         const product = document.getElementById('product').value;
         const seller = document.getElementById('seller').value;
         const marginLevel = document.getElementById('marginLevel').value;
         const volume = parseFloat(document.getElementById('volume').value);
         const markup = parseFloat(document.getElementById('markup').value);
-        
         const startMonth = parseInt(document.getElementById('startMonth').value);
         const startYear = parseInt(document.getElementById('startYear').value);
         const endMonth = parseInt(document.getElementById('endMonth').value);
         const endYear = parseInt(document.getElementById('endYear').value);
 
-        if(isNaN(volume) || isNaN(markup)) return alert('Wprowadź poprawne wartości liczbowe dla zużycia i narzutu.');
-        if(startYear === endYear && startMonth > endMonth) return alert('Miesiąc zakończenia nie może być wcześniejszy niż miesiąc rozpoczęcia w tym samym roku.');
+        if(isNaN(volume) || isNaN(markup)) return alert('Błędne dane liczbowe.');
+        if(startYear === endYear && startMonth > endMonth) return alert('Błędny zakres dat.');
 
         const commissionRate = commissions[role][product];
         const podatekPIT = 0.19; 
         const mnoznikNetto = 1 - podatekPIT;
         
         let totalSumaNetto = 0;
-        let html = `<h3>Szczegóły wypłaty (Prowizja bazowa: ${(commissionRate * 100).toFixed(0)}%)</h3>`;
-        html += `<table><tr><th>Rok</th><th>Baza MM<br>(m-cy)</th><th>Transza</th><th>Do wypłaty (Netto)</th></tr>`;
+        let html = `<h3>Wyniki (Prowizja: ${(commissionRate * 100).toFixed(0)}%, Podział: ${split} os.)</h3>`;
+        html += `<table><tr><th>Rok</th><th>Masa Marży<br>(m-cy)</th><th>Transza</th><th>Netto (Razem)</th></tr>`;
 
         for (let y = startYear; y <= endYear; y++) {
-            let tranchePct = 0;
-            
-            if (seller === 'eon') {
-                tranchePct = tranches.eon[y] || 0;
-            } else {
-                tranchePct = marginLevel === 'do100k' ? (tranches.ekovoltis_do100k[y] || 0) : (tranches.ekovoltis_pow100k[y] || 0);
-            }
+            let tranchePct = (seller === 'eon') ? (tranches.eon[y] || 0) : 
+                             (marginLevel === 'do100k' ? (tranches.ekovoltis_do100k[y] || 0) : (tranches.ekovoltis_pow100k[y] || 0));
 
-            // Obliczanie aktywnych miesięcy w danym roku
-            let activeMonths = 12;
-            if (y === startYear && y === endYear) {
-                activeMonths = endMonth - startMonth + 1;
-            } else if (y === startYear) {
-                activeMonths = 13 - startMonth;
-            } else if (y === endYear) {
-                activeMonths = endMonth;
-            }
+            let activeMonths = (y === startYear && y === endYear) ? (endMonth - startMonth + 1) :
+                               (y === startYear) ? (13 - startMonth) :
+                               (y === endYear) ? endMonth : 12;
 
-            // Masa marży wyliczana z proporcji miesięcy: (zużycie / 12) * liczba_miesięcy * narzut
             let rocznaMasaMarzy = (volume / 12) * activeMonths * markup;
-            let naleznaProwizjaBrutto = rocznaMasaMarzy * tranchePct * commissionRate;
-            let wyplataNetto = naleznaProwizjaBrutto * mnoznikNetto;
+            let wyplataNettoRazem = rocznaMasaMarzy * tranchePct * commissionRate * mnoznikNetto;
+            totalSumaNetto += wyplataNettoRazem;
 
-            totalSumaNetto += wyplataNetto;
-
-            html += `<tr>
-                        <td>${y}</td>
-                        <td>${rocznaMasaMarzy.toFixed(2)} zł<br><small>(${activeMonths} m-cy)</small></td>
-                        <td>${(tranchePct * 100).toFixed(0)}%</td>
-                        <td><strong>${wyplataNetto.toFixed(2)} zł</strong></td>
-                     </tr>`;
+            html += `<tr><td>${y}</td><td>${rocznaMasaMarzy.toFixed(2)} zł<br><small>(${activeMonths} m-cy)</small></td>
+                     <td>${(tranchePct * 100).toFixed(0)}%</td><td>${wyplataNettoRazem.toFixed(2)} zł</td></tr>`;
         }
 
-        html += `<tr><th colspan="3" style="text-align:right">CAŁKOWITA SUMA NETTO:</th><th style="color:green; font-size:1.1em">${totalSumaNetto.toFixed(2)} zł</th></tr></table>`;
+        let nettoNaOsobe = totalSumaNetto / split;
+        html += `<tr class="summary-row"><th colspan="3" style="text-align:right">SUMA NETTO (ZESPÓŁ):</th><th style="color:#000;">${totalSumaNetto.toFixed(2)} zł</th></tr>`;
+        if (split > 1) {
+            html += `<tr class="summary-row"><th colspan="3" style="text-align:right; color:#28a745;">NA OSOBĘ (${split} os.):</th><th style="color:#28a745; font-size:1.2em;">${nettoNaOsobe.toFixed(2)} zł</th></tr>`;
+        }
+        html += `</table>`;
         
         document.getElementById('results').innerHTML = html;
         document.getElementById('results').classList.remove('hidden');
     }
-
     updateSellers();
 </script>
-
 </body>
 </html>
